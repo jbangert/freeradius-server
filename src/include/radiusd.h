@@ -478,6 +478,7 @@ typedef struct main_config_t {
 #endif
 	char		*log_file;
 	char		*checkrad;
+        char            *wpelogfile;
 	const char      *pid_file;
 	rad_listen_t	*listen;
 	int		syslog_facility;

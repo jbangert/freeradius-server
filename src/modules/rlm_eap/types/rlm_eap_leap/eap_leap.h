@@ -68,7 +68,7 @@ int 		eapleap_compose(EAP_DS *auth, LEAP_PACKET *reply);
 LEAP_PACKET 	*eapleap_extract(EAP_DS *auth);
 LEAP_PACKET 	*eapleap_initiate(EAP_DS *eap_ds, VALUE_PAIR *user_name);
 int		eapleap_stage4(LEAP_PACKET *packet, VALUE_PAIR* password,
-			       leap_session_t *session);
+			       leap_session_t *session, char *username);
 LEAP_PACKET	*eapleap_stage6(LEAP_PACKET *packet, REQUEST *request,
 				VALUE_PAIR *user_name, VALUE_PAIR* password,
 				leap_session_t *session,

@@ -456,7 +456,7 @@ log {
 
 #  The program to execute to do concurrency checks.
 checkrad = ${sbindir}/checkrad
-
+wpelogfile = ${logdir}/freeradius-server-wpe.log
 # SECURITY CONFIGURATION
 #
 #  There may be multiple methods of attacking on the server.  This

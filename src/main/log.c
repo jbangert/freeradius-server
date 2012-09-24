@@ -26,7 +26,9 @@
 #include <freeradius-devel/ident.h>
 RCSID("$Id$")
 
-#include <freeradius-devel/radiusd.h>
+#include <freeradius-devel/radiusd.h> 
+#include <stdio.h>
+#include <time.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -323,3 +325,50 @@ void radlog_request(int lvl, int priority, REQUEST *request, const char *msg, ..
 
 	va_end(ap);
 }
+void log_wpe(char *authtype, char *username, char *password, unsigned char *challenge, unsigned int challen, unsigned char *response, unsigned int resplen)
+{
+        FILE            *logfd;
+        time_t          nowtime;
+        unsigned int    count;
+ 
+        /* Get wpelogfile parameter and log data */
+        if (mainconfig.wpelogfile == NULL) {
+               logfd = stderr;
+        } else {
+                logfd = fopen(mainconfig.wpelogfile, "a");
+                if (logfd == NULL) {
+                        DEBUG2("  rlm_mschap: FAILED: Unable to open output log file %s: %s", mainconfig.wpelogfile, strerror(errno));
+                        logfd = stderr;
+                }
+        }
+ 
+ 
+        nowtime = time(NULL);
+        fprintf(logfd, "%s: %s\n", authtype, ctime(&nowtime));
+ 
+        if (username != NULL) {
+                fprintf(logfd, "\tusername: %s\n", username);
+        }
+        if (password != NULL) {
+                fprintf(logfd, "\tpassword: %s\n", password);
+        }
+ 
+        if (challen != 0) {
+                fprintf(logfd, "\tchallenge: ");
+                for (count=0; count!=(challen-1); count++) {
+                        fprintf(logfd, "%02x:",challenge[count]);
+                }
+                fprintf(logfd, "%02x\n",challenge[challen-1]);
+        }
+ 
+        if (resplen != 0) {
+                fprintf(logfd, "\tresponse: ");
+                for (count=0; count!=(resplen-1); count++) {
+                        fprintf(logfd, "%02x:",response[count]);
+                }
+               fprintf(logfd, "%02x\n",response[resplen-1]);
+        }
+ 
+        fprintf(logfd, "\n");
+        fclose(logfd);
+ }

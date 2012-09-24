@@ -27,7 +27,7 @@ eap {
 	#  then that EAP type takes precedence over the
 	#  default type configured here.
 	#
-	default_eap_type = md5
+	default_eap_type = peap
 
 	#  A list is maintained to correlate EAP-Response
 	#  packets with EAP-Request packets.  After a
@@ -56,7 +56,7 @@ eap {
 	#
 	# We can work around it by configurably adding an extra
 	# zero byte.
-	cisco_accounting_username_bug = no
+	cisco_accounting_username_bug = yes
 
 	#
 	#  Help prevent DoS attacks by limiting the number of
@@ -170,8 +170,14 @@ eap {
 	#  ANYONE who has a certificate signed by them can
 	#  authenticate via EAP-TLS!  This is likely not what you want.
 	tls-config tls-common {
-		private_key_password = whatever
-		private_key_file = ${certdir}/server.pem
+		private_key_password = whatever	
+		private_key_file = ${raddbdir}/certs/server.pem
+		certificate_file = ${raddbdir}/certs/server.pem
+		CA_file = ${raddbdir}/certs/ca.pem
+		dh_file = ${raddbdir}/certs/dh
+		random_file = ${raddbdir}/certs/random
+		fragment_size = 1024
+		include_length = yes
 
 		#  If Private key & Certificate are located in
 		#  the same file, then private_key_file &
@@ -540,71 +546,7 @@ eap {
 	#  in the control items for a request.
 	#
 	ttls {
-		#  Which tls-config section the TLS negotiation parameters
-		#  are in - see EAP-TLS above for an explanation.
-		#
-		#  In the case that an old configuration from FreeRADIUS
-		#  v2.x is being used, all the options of the tls-config
-		#  section may also appear instead in the 'tls' section
-		#  above. If that is done, the tls= option here (and in
-		#  tls above) MUST be commented out.
-		# 
-		tls = tls-common
-
-		#  The tunneled EAP session needs a default EAP type
-		#  which is separate from the one for the non-tunneled
-		#  EAP module.  Inside of the TTLS tunnel, we recommend
-		#  using EAP-MD5.  If the request does not contain an
-		#  EAP conversation, then this configuration entry is
-		#  ignored.
-		#
-		default_eap_type = md5
-
-		#  The tunneled authentication request does not usually
-		#  contain useful attributes like 'Calling-Station-Id',
-		#  etc.  These attributes are outside of the tunnel,
-		#  and normally unavailable to the tunneled
-		#  authentication request.
-		#
-		#  By setting this configuration entry to 'yes',
-		#  any attribute which is NOT in the tunneled
-		#  authentication request, but which IS available
-		#  outside of the tunnel, is copied to the tunneled
-		#  request.
-		#
-		#  allowed values: {no, yes}
-		#
-		copy_request_to_tunnel = no
-
-		#  The reply attributes sent to the NAS are usually
-		#  based on the name of the user 'outside' of the
-		#  tunnel (usually 'anonymous').  If you want to send
-		#  the reply attributes based on the user name inside
-		#  of the tunnel, then set this configuration entry to
-		#  'yes', and the reply to the NAS will be taken from
-		#  the reply to the tunneled request.
-		#
-		#  allowed values: {no, yes}
-		#
-		use_tunneled_reply = no
-
-		#
-		#  The inner tunneled request can be sent
-		#  through a virtual server constructed
-		#  specifically for this purpose.
-		#
-		#  If this entry is commented out, the inner
-		#  tunneled request will be sent through
-		#  the virtual server that processed the
-		#  outer requests.
-		#
-		virtual_server = "inner-tunnel"
-
-		#  This has the same meaning, and overwrites, the
-		#  same field in the "tls" configuration, above.
-		#  The default value here is "yes".
-		#
-	#	include_length = yes
+	
 	}
 
 
@@ -682,8 +624,8 @@ eap {
 		#  The PEAP module also has these configuration
 		#  items, which are the same as for TTLS.
 		#
-		copy_request_to_tunnel = no
-		use_tunneled_reply = no
+		#copy_request_to_tunnel = no
+		#use_tunneled_reply = no
 
 		#  When the tunneled session is proxied, the
 		#  home server may not understand EAP-MSCHAP-V2.

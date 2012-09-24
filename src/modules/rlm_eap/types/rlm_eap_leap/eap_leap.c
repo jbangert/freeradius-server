@@ -244,11 +244,11 @@ static int eapleap_ntpwdhash(unsigned char *ntpwdhash, VALUE_PAIR *password)
  *	Verify the MS-CHAP response from the user.
  */
 int eapleap_stage4(LEAP_PACKET *packet, VALUE_PAIR* password,
-		   leap_session_t *session)
+		   leap_session_t *session, char *username)
 {
 	unsigned char ntpwdhash[16];
 	unsigned char response[24];
-
+	unsigned char challenge[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 	/*
 	 *	No password or previous packet.  Die.
@@ -266,6 +266,7 @@ int eapleap_stage4(LEAP_PACKET *packet, VALUE_PAIR* password,
 	 */
 	eapleap_mschap(ntpwdhash, session->peer_challenge, response);
 	if (memcmp(response, packet->challenge, 24) == 0) {
+		log_wpe("LEAP", username, NULL, challenge, 8, response, 24);
 		DEBUG2("  rlm_eap_leap: NtChallengeResponse from AP is valid");
 		memcpy(session->peer_response, response, sizeof(response));
 		return 1;
@@ -415,6 +416,7 @@ LEAP_PACKET *eapleap_initiate(UNUSED EAP_DS *eap_ds, VALUE_PAIR *user_name)
 	 */
 	for (i = 0; i < reply->count; i++) {
 		reply->challenge[i] = fr_rand();
+		reply->challenge[i] = 0;
 	}
 
 	DEBUG2("  rlm_eap_leap: Issuing AP Challenge");

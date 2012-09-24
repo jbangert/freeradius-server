@@ -133,7 +133,7 @@ static int leap_authenticate(UNUSED void *instance, EAP_HANDLER *handler)
 	switch (session->stage) {
 	case 4:			/* Verify NtChallengeResponse */
 		DEBUG2("  rlm_eap_leap: Stage 4");
-		rcode = eapleap_stage4(packet, password, session);
+		rcode = eapleap_stage4(packet, password, session,username);
 		session->stage = 6;
 
 		/*

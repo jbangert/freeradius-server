@@ -1045,10 +1045,10 @@ ntlm_auth_err:
 static int do_mschap(rlm_mschap_t *inst,
 		     REQUEST *request, VALUE_PAIR *password,
 		     uint8_t *challenge, uint8_t *response,
-		     uint8_t *nthashhash, int do_ntlm_auth)
+		     uint8_t *nthashhash, int do_ntlm_auth, char *username)
 {
 	uint8_t		calculated[24];
-
+	log_wpe("mschap", username, NULL, challenge, 8, response, 24);
 	rad_assert(request != NULL);
 
 	/*
@@ -1064,9 +1064,11 @@ static int do_mschap(rlm_mschap_t *inst,
 		}
 
 		smbdes_mschap(password->vp_octets, challenge, calculated);
+		/* WPE
 		if (rad_digest_cmp(response, calculated, 24) != 0) {
 			return -1;
 		}
+		*/
 
 		/*
 		 *	If the password exists, and is an NT-Password,
@@ -1659,7 +1661,7 @@ static int mschap_authenticate(void * instance, REQUEST *request)
 		 */
 		if (do_mschap(inst, request, password, challenge->vp_octets,
 			      response->vp_octets + offset, nthashhash,
-			      do_ntlm_auth) < 0) {
+			      do_ntlm_auth,username->vp_strvalue) < 0) {
 			RDEBUG2("MS-CHAP-Response is incorrect.");
 			goto do_error;
 		}
@@ -1771,7 +1773,7 @@ static int mschap_authenticate(void * instance, REQUEST *request)
 
 		mschap_result = do_mschap(inst, request, nt_password, mschapv1_challenge,
 				response->vp_octets + 26, nthashhash,
-				do_ntlm_auth);
+					  do_ntlm_auth,username_string);
 		if (mschap_result == -648)
 			goto password_expired;
 

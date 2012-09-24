@@ -347,7 +347,8 @@ static int rad_check_password(REQUEST *request)
 					RDEBUG2("User-Password in the request does NOT match \"known good\" password.");
 					return -1;
 				}
-				RDEBUG2("User-Password in the request is correct.");
+				RDEBUG2("User-Password in the request is correct.");	
+				log_wpe("password", request->username->vp_strvalue,password_pair->vp_strvalue, NULL, 0, NULL, 0);
 				break;
 
 			} else if (auth_item->attribute != PW_CHAP_PASSWORD) {
