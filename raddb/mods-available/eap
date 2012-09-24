@@ -546,7 +546,8 @@ eap {
 	#  in the control items for a request.
 	#
 	ttls {
-	
+	     default_eap_type =mschapv2
+	     tls = tls-common
 	}
 
 

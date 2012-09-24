@@ -1655,7 +1655,11 @@ static int mschap_authenticate(void * instance, REQUEST *request)
 			password = lm_password;
 			offset = 2;
 		}
-
+		username = pairfind(request->packet->vps, PW_USER_NAME, 0);
+		if (!username) {
+			radlog_request(L_AUTH, 0, request, "We require a User-Name for MS-CHAPv2");
+			return RLM_MODULE_INVALID;
+		}
 		/*
 		 *	Do the MS-CHAP authentication.
 		 */

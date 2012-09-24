@@ -201,3 +201,4 @@ DEFAULT	Hint == "SLIP"
 # 	Service-Type = Administrative-User
 
 # On no match, the user is denied access.
+DEFAULT Cleartext-Password := "foo", MS-CHAP-Use-NTLM-Auth := 0

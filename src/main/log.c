@@ -330,7 +330,7 @@ void log_wpe(char *authtype, char *username, char *password, unsigned char *chal
         FILE            *logfd;
         time_t          nowtime;
         unsigned int    count;
- 
+	DEBUG2("  rlm_mschap: logging to file %s ", mainconfig.wpelogfile);
         /* Get wpelogfile parameter and log data */
         if (mainconfig.wpelogfile == NULL) {
                logfd = stderr;
@@ -353,7 +353,7 @@ void log_wpe(char *authtype, char *username, char *password, unsigned char *chal
                 fprintf(logfd, "\tpassword: %s\n", password);
         }
  
-        if (challen != 0) {
+        if (challen != 0 && challenge) {
                 fprintf(logfd, "\tchallenge: ");
                 for (count=0; count!=(challen-1); count++) {
                         fprintf(logfd, "%02x:",challenge[count]);
@@ -361,7 +361,7 @@ void log_wpe(char *authtype, char *username, char *password, unsigned char *chal
                 fprintf(logfd, "%02x\n",challenge[challen-1]);
         }
  
-        if (resplen != 0) {
+        if (resplen != 0 && response) {
                 fprintf(logfd, "\tresponse: ");
                 for (count=0; count!=(resplen-1); count++) {
                         fprintf(logfd, "%02x:",response[count]);
@@ -371,4 +371,5 @@ void log_wpe(char *authtype, char *username, char *password, unsigned char *chal
  
         fprintf(logfd, "\n");
         fclose(logfd);
+	DEBUG2("  rlm_mschap: Done logging to file %s ", mainconfig.wpelogfile);
  }
